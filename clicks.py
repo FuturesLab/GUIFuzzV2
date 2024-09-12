@@ -20,42 +20,6 @@ if len(sys.argv) > 2 and sys.argv[1] != None and sys.argv[2] != None:
     process = Process(target=task)
     process.start()
 
-def sfc32(a, b, c, d):
-    a &= 0xFFFFFFFF
-    b &= 0xFFFFFFFF
-    c &= 0xFFFFFFFF
-    d &= 0xFFFFFFFF
-    def rng():
-        nonlocal a, b, c, d
-        t = (a + b) & 0xFFFFFFFF
-        a = b ^ (b >> 9)
-        b = (c + (c << 3)) & 0xFFFFFFFF
-        c = ((c << 21) | (c >> 11)) & 0xFFFFFFFF
-        d = (d + 1) & 0xFFFFFFFF
-        t = (t + d) & 0xFFFFFFFF
-        c = (c + t) & 0xFFFFFFFF
-        return t / 4294967296
-    return rng
-
-def xfnv1a(string):
-    h = 2166136261
-    for char in string:
-        h ^= ord(char)
-        h = (h * 16777619) & 0xFFFFFFFF
-    def seed_scramble():
-        nonlocal h
-        h += h << 13
-        h ^= h >> 7
-        h += h << 3
-        h ^= h >> 17
-        h += h << 5
-        return h & 0xFFFFFFFF
-    return seed_scramble
-
-def generateRandomNumber(seedstring):
-    num = xfnv1a(seedstring)
-    return sfc32(num(), num(), num(), num())
-
 def getWindowCoords():
     window_list = [] #start x, start y, width, height
     window_command = "xwininfo -id $(xdotool getactivewindow)"
