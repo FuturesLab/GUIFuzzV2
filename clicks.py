@@ -83,7 +83,7 @@ def getScreenResolution():
     resol_value_split = resol_value.split('x')
     return int(resol_value_split[0])
 
-time.sleep(3)
+time.sleep(40)
 
 window_coords = getWindowCoords()
 start_x = window_coords[0]
@@ -91,23 +91,33 @@ start_y = window_coords[1]
 width = window_coords[2]
 height = window_coords[3]
 
-y_padding = 40
+y_padding = 10
 
-seed = ""
+data = ""
 
 with open(seed_path, 'r', encoding='iso-8859-1') as f:
-	seed = f.read()
+        data = f.read()
 
 # Add a sleep when running in Qemu mode because the target program takes a lot of time to open
-# time.sleep(25)
+#time.sleep(20)
 
-random_number = generateRandomNumber(seed)
 
-for i in range(20):
-    val = random_number()
+i = 0
+
+# Interpet each 2 bytes of data as a click, 
+# where byte 1 is a percent of the window width and byte 2 is a percent of the window height
+while i < len(data):
+    if i >= len(data) - 1:
+        break
+
+    val = ord(data[i]) / 255.0
+    val2 = ord(data[i+1]) / 255.0
+
     x_val = (start_x - 10) + width * val
-    y_val = (start_y + y_padding - 10) + (height - y_padding) * val
+    y_val = (start_y + y_padding - 10) + (height - y_padding) * val2
     pyautogui.click(math.floor(x_val),math.floor(y_val))
+    
+    i += 1
 
 time.sleep(1)
 
